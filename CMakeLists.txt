@@ -13,7 +13,7 @@ find_package(Boost COMPONENTS
     system
     REQUIRED)
 
-set(SNAPPY_LIBRARY "")
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/third_party/snappy)
 
 string(REGEX MATCH "clang" CLANG ${CMAKE_CXX_COMPILER})
 
@@ -151,15 +151,20 @@ endif()
 
 add_library(leveldb ${LEVEL_DB_FILES})
 
+target_compile_definitions(leveldb PUBLIC SNAPPY)
+
 target_include_directories(leveldb 
     PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include
-    PRIVATE ${CMAKE_CURRENT_SOURCE_DIR} 
+    PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}
+    PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/third_party/snappy
+    PUBLIC ${CMAKE_CURRENT_BINARY_DIR}/third_party/snappy
 )
 
 target_link_libraries(leveldb 
     PRIVATE
     ${Boost_LIBRARIES}
     ${Pthread_LIBRARY}
+    snappy
 )
 
 add_executable(leveldbutil
