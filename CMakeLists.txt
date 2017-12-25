@@ -230,6 +230,8 @@ function(LEVELDB_ADD_TEST TESTNAME TESTFILE)
     add_dependencies(RUN_LEVELDB_UNIT_TESTS leveldb_${TESTNAME}_test)
 endfunction(LEVELDB_ADD_TEST)
 
+enable_testing()
+
 LEVELDB_ADD_TEST(env          util/env_test.cc)
 LEVELDB_ADD_TEST(crc32        util/crc32c_test.cc)
 LEVELDB_ADD_TEST(coding       util/coding_test.cc)
