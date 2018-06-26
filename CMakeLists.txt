@@ -3,9 +3,26 @@ cmake_minimum_required(VERSION 3.0.2 FATAL_ERROR)
 project(leveldb CXX)    
 set(CMAKE_DEBUG_POSTFIX "d")
 
+option(leveldb_MSVC_STATIC_RUNTIME "Compile with static runtime" OFF)
+option(leveldb_BOOST_ALL_NO_LIB "Disable Boost automatic linking" OFF)
+option(leveldb_BUILD_TESTS "Build tests" ON)
+
 set(Boost_USE_STATIC_LIBS ON)
 set(Boost_USE_MULTITHREAD ON)
 set(Boost_USE_STATIC_RUNTIME OFF)
+
+if(leveldb_MSVC_STATIC_RUNTIME)
+    set(Boost_USE_STATIC_RUNTIME ON)
+    add_compile_options("/MT")
+endif(leveldb_MSVC_STATIC_RUNTIME)
+
+if(leveldb_BOOST_ALL_NO_LIB)
+    add_definitions("-DBOOST_ALL_NO_LIB=1")
+endif(leveldb_BOOST_ALL_NO_LIB)
+
+if(NOT leveldb_BUILD_TESTS)
+    set(SNAPPY_BUILD_TESTS OFF)
+endif(NOT leveldb_BUILD_TESTS)
 
 find_package(Boost COMPONENTS 
     date_time
@@ -185,6 +202,7 @@ install(TARGETS leveldbutil
 ##################################### TESTS #######################################
 # Every leveldb test file has to be compiled as an independant binary
 # because of the test framework used by leveldb.
+if(leveldb_BUILD_TESTS)
 add_library(leveldb_test_rt 
     util/testutil.h
     util/testutil.cc
@@ -253,3 +271,4 @@ LEVELDB_ADD_TEST(bloom        util/bloom_test.cc)
 LEVELDB_ADD_TEST(hash         util/hash_test.cc)
 LEVELDB_ADD_TEST(db_bench     db/db_bench.cc)
 LEVELDB_ADD_TEST(db           db/db_test.cc)
+endif(leveldb_BUILD_TESTS)
